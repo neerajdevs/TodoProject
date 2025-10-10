@@ -1,0 +1,234 @@
+/*
+--------------------------------------------------
+MODERN TODO DASHBOARD CSS (style.css)
+--------------------------------------------------
+*/
+
+/* --- 1. Theme Variables and Resets --- */
+
+:root {
+    /* Theme Variables */
+    --primary-color: #6a11cb;
+    --primary-gradient: linear-gradient(45deg, #6a11cb 0%, #2575fc 100%);
+    --secondary-color: #f7f9fc; /* Body Background */
+    --card-bg: #fff;
+    --text-color: #333;
+    --light-text-color: #666;
+    --border-color: #eee;
+    --shadow-sm: rgba(0, 0, 0, 0.05);
+    --shadow-md: rgba(0, 0, 0, 0.1);
+    --radius-lg: 12px;
+    --radius-md: 8px;
+
+    /* Priority Colors */
+    --priority-high-color: #ff4d4f; /* Red */
+    --priority-medium-color: #faad14; /* Orange */
+    --priority-low-color: #52c41a; /* Green */
+}
+
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    padding: 20px;
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* --- 2. Header and Typography --- */
+
+header {
+    margin-bottom: 30px;
+}
+
+header h1 {
+    color: var(--primary-color);
+    font-size: 2.2em;
+}
+
+header p {
+    color: var(--light-text-color);
+}
+
+/* --- 3. Summary Cards --- */
+
+.summary-cards {
+    display: grid;
+    /* Mobile-first: cards adjust automatically */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.summary-card {
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 4px 12px var(--shadow-sm); /* Soft shadow */
+    text-align: center;
+    transition: transform 0.2s; /* Subtle hover effect */
+}
+
+.summary-card:hover {
+    transform: translateY(-2px);
+}
+
+.summary-card h3 {
+    font-size: 1em;
+    color: var(--light-text-color);
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.summary-card .count {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+/* --- 4. Task List and Items --- */
+
+#tasksContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-card {
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 5px var(--shadow-sm);
+    border-left: 5px solid transparent; /* Used for priority color */
+    display: flex;
+    flex-direction: column; /* Mobile: Stack details and actions */
+    justify-content: space-between;
+    transition: box-shadow 0.2s;
+}
+
+.task-card:hover {
+    box-shadow: 0 4px 10px var(--shadow-md);
+}
+
+/* Priority Border Colors */
+.priority-high { border-left-color: var(--priority-high-color); }
+.priority-medium { border-left-color: var(--priority-medium-color); }
+.priority-low { border-left-color: var(--priority-low-color); }
+
+.task-details {
+    flex-grow: 1;
+}
+
+.task-details h3 {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.task-details .description {
+    font-size: 0.9em;
+    color: var(--light-text-color);
+    margin-bottom: 5px;
+}
+
+.task-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.task-meta span {
+    display: flex;
+    align-items: center;
+    color: var(--light-text-color);
+}
+
+/* Completed State */
+.completed {
+    opacity: 0.8;
+    background-color: #f0f4f8; /* Subtle change for completed tasks */
+}
+.completed .task-details h3 {
+    text-decoration: line-through;
+    color: #999;
+}
+
+/* No Tasks Message */
+.no-tasks-message {
+    text-align: center;
+    padding: 40px;
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-lg);
+    background-color: var(--card-bg);
+    color: var(--light-text-color);
+}
+
+.no-tasks-message a {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* --- 5. Action Buttons --- */
+
+.task-actions {
+    margin-top: 15px; /* Spacing on mobile */
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+}
+
+.btn {
+    padding: 8px 12px;
+    text-decoration: none;
+    color: white;
+    border-radius: 5px;
+    font-size: 0.85em;
+    font-weight: 500;
+    transition: opacity 0.2s;
+    line-height: 1;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+.btn-toggle { background-color: var(--priority-low-color); } /* Complete (Green) */
+.btn-toggle.undo { background-color: #ff9800; } /* Undo (Orange) */
+.btn-edit { background-color: #3f51b5; } /* Blue/Indigo */
+.btn-delete { background-color: var(--priority-high-color); } /* Delete (Red) */
+
+
+/* --- 6. Responsiveness (Desktop Layout) --- */
+
+@media (min-width: 768px) {
+    /* Task card layout for tablets/desktops */
+    .task-card {
+        flex-direction: row; /* Details on left, actions on right */
+        align-items: center;
+    }
+
+    .task-details {
+        padding-right: 20px; /* Space before actions */
+    }
+
+    .task-actions {
+        margin-top: 0;
+        justify-content: flex-end; /* Align actions to the right */
+        flex-shrink: 0; /* Prevent buttons from shrinking */
+    }
+}

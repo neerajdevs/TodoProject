@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Task</title>
+    <!-- Load Poppins font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ---------------------------------------------------- */
+        /* 1. Global & Utility Setup */
+        /* ---------------------------------------------------- */
+        :root {
+            --primary-color: #7f52ff; /* Purple for focus/primary */
+            --primary-light: #f3f0ff;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --text-color-dark: #2c3e50;
+            --text-color-light: #7f8c8d;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --border-color: #e0e6ed;
+            --radius-default: 12px;
+            --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --priority-high: #e74c3c;
+            --priority-medium: #f39c12;
+            --priority-low: #2ecc71;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--background-color); 
+            color: var(--text-color-dark); 
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Align to top */
+        }
+
+        .edit-container {
+            width: 100%;
+            max-width: 900px;
+            margin-top: 30px;
+        }
+
+        /* ---------------------------------------------------- */
+        /* 2. Header & Layout */
+        /* ---------------------------------------------------- */
+        header {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        header h1 {
+            font-size: 2.2em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+        header p {
+            color: var(--text-color-light);
+        }
+
+        .form-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            background-color: var(--card-background);
+            padding: 30px;
+            border-radius: var(--radius-default);
+            box-shadow: var(--shadow-soft);
+        }
+
+        /* ---------------------------------------------------- */
+        /* 3. Form Styling */
+        /* ---------------------------------------------------- */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        input:not([type="checkbox"]), select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1em;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.8em;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        input:invalid:not(:placeholder-shown):not(:focus) {
+            border-color: var(--danger-color);
+        }
+
+        /* Checkbox Styling */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-left: 5px;
+        }
+        .checkbox-group label {
+            margin-bottom: 0;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        /* ---------------------------------------------------- */
+        /* 4. Live Preview Panel */
+        /* ---------------------------------------------------- */
+        .preview-panel {
+            background-color: var(--primary-light);
+            padding: 25px;
+            border-radius: var(--radius-default);
+            border: 1px solid var(--primary-color);
+            height: fit-content;
+        }
+        .preview-panel h3 {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        .preview-field {
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+        .preview-field strong {
+            display: block;
+            color: var(--text-color-dark);
+            font-weight: 600;
+        }
+        .preview-field span {
+            color: var(--text-color-light);
+            display: block;
+            white-space: pre-wrap;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: white;
+            margin-top: 5px;
+        }
+        .badge-High { background-color: var(--priority-high); }
+        .badge-Medium { background-color: var(--priority-medium); }
+        .badge-Low { background-color: var(--priority-low); }
+        .badge-Completed { background-color: var(--success-color); }
+        .badge-Pending { background-color: var(--danger-color); }
+
+
+        /* ---------------------------------------------------- */
+        /* 5. Buttons & Actions */
+        /* ---------------------------------------------------- */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #9b59b6, var(--primary-color));
+            color: white;
+            box-shadow: 0 4px 15px rgba(127, 82, 255, 0.4);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 6px 20px rgba(127, 82, 255, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:disabled {
+            background: var(--text-color-light);
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--background-color);
+            color: var(--text-color-dark);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover {
+            background-color: #e0e6ed;
+        }
+
+        .btn-delete {
+            font-size: 0.9em;
+            color: var(--danger-color);
+            background: none;
+            border: none;
+            padding: 5px 0;
+            text-align: left;
+            margin-top: 10px;
+            width: fit-content;
+        }
+        .btn-delete:hover {
+            text-decoration: underline;
+        }
+
+        /* Toast Messages */
+        #toast-container {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column-reverse; /* Newest on top */
+            gap: 10px;
+        }
+        .toast {
+            background-color: var(--success-color);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            min-width: 250px;
+            text-align: center;
+            font-weight: 500;
+            transform: translateY(20px);
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .toast.error {
+            background-color: var(--danger-color);
+        }
+        .toast.delete {
+            background-color: var(--priority-high);
+        }
+
+        /* ---------------------------------------------------- */
+        /* 6. Responsiveness */
+        /* ---------------------------------------------------- */
+        @media (min-width: 768px) {
+            .form-layout {
+                grid-template-columns: 2fr 1fr; /* Form | Preview */
+            }
+            .button-group {
+                flex-direction: row;
+            }
+            .btn-primary, .btn-secondary {
+                flex-grow: 1;
+            }
+            .btn-delete {
+                margin-left: 0;
+                margin-top: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="edit-container">
+        <header>
+            <h1>Edit Task</h1>
+            <p>Update your task details and save changes.</p>
+        </header>
+
+        <form id="editTaskForm" method = "POST" class="form-layout" aria-label="Edit Task Form">
+            <!-- Left Side: Form Fields -->
+             {% csrf_token %}
+            <div class="form-fields">
+                <div class="form-group">
+                    <label for="taskTitle">Task Title (Required)</label>
+                    <input type="text" id="taskTitle" name="task" placeholder = "{{task.task}}" value = "{{task.task}}" maxlength="255" required >
+                    <span class="error-message" id="error-title">Task title is required.</span>
+                    <small style="color: var(--text-color-light); font-size: 0.8em;">Max 255 characters.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDescription">Description (Optional)</label>
+                    <textarea id="taskDescription" name="description" placeholder = "{{task.description}}" value = "{{task.description}}" ></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskDueDate">Due Date (Required)</label>
+                    <input type="date" id="taskDueDate" name="due_date" required placeholder = "{{task.due_date}}" value = "{{task.due_date}}" >
+                    <span class="error-message" id="error-due-date">Due date is required and cannot be in the past.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="taskPriority">Priority</label>
+                    <select id="taskPriority" name="priority" placeholder = "{{task.priority}}" value = "{{task.priority}}" >
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="taskCompleted" name="completed">
+                    <label for="taskCompleted">Mark as Completed</label>
+                </div>
+                
+                <!-- Buttons & Delete Action -->
+                <div class="button-group">
+                    <button type="submit" id="save-btn" class="btn btn-primary" >
+                        Save Changes
+                    </button>
+                    <button type="button" id="cancel-btn" class="btn btn-secondary" onclick="handleCancel()">
+                        Cancel
+                    </button>
+                </div>
+                <button type="button" id="delete-btn" class="btn btn-delete" onclick="handleDelete()">
+                    Delete this task permanently
+                </button>
+            </div>
+
+            <!-- Right Side: Live Preview Panel -->
+            <div class="preview-panel">
+                <h3>Live Task Preview</h3>
+                <div class="preview-field">
+                    <strong>Title</strong>
+                    <span id="preview-title">...</span>
+                </div>
+                <div class="preview-field">
+                    <strong>Due Date</strong>
+                    <span id="preview-due-date">...</span>
+                </div>
+                <div class="preview-field">
+                    <strong>Priority</strong>
+                    <span id="preview-priority-badge" class="badge">...</span>
+                </div>
+                <div class="preview-field">
+                    <strong>Status</strong>
+                    <span id="preview-completed-badge" class="badge">...</span>
+                </div>
+                <div class="preview-field">
+                    <strong>Description</strong>
+                    <span id="preview-description">...</span>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Toast Container (for messages) -->
+    <div id="toast-container" aria-live="polite"></div>
+
+    <script>
+        // ----------------------------------------------------
+        // Configuration Block (Demo Data)
+        // ----------------------------------------------------
+       
+        const DASHBOARD_URL = "/dashboard";
+        const DELETE_URL = "/tasks/delete/" + TASK.id; // Placeholder URL
+        
+        // ----------------------------------------------------
+        // DOM Element Cache
+        // ----------------------------------------------------
+        const form = document.getElementById('editTaskForm');
+        const saveBtn = document.getElementById('save-btn');
+        const deleteBtn = document.getElementById('delete-btn');
+        const titleInput = document.getElementById('taskTitle');
+        const dateInput = document.getElementById('taskDueDate');
+        const descInput = document.getElementById('taskDescription');
+        const prioritySelect = document.getElementById('taskPriority');
+        const completedCheckbox = document.getElementById('taskCompleted');
+        const toastContainer = document.getElementById('toast-container');
+        
+        const previewTitle = document.getElementById('preview-title');
+        const previewDate = document.getElementById('preview-due-date');
+        const previewPriorityBadge = document.getElementById('preview-priority-badge');
+        const previewCompletedBadge = document.getElementById('preview-completed-badge');
+        const previewDescription = document.getElementById('preview-description');
+
+        // ----------------------------------------------------
+        // Helper Functions
+        // ----------------------------------------------------
+
+        /** Returns today's date in YYYY-MM-DD format. */
+        function getToday() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+        
+        /** Shows a temporary success/error/delete message. */
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.prepend(toast); // Prepend to show newest on top
+            
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                toast.addEventListener('transitionend', () => toast.remove());
+            }, 3000);
+        }
+
+        /** Formats date to display (e.g., Nov 15, 2025). */
+        function formatDateDisplay(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return date.toLocaleDateString('en-US', options);
+        }
+
+        // ----------------------------------------------------
+        // Main Logic
+        // ----------------------------------------------------
+        
+        /**
+         * Updates the live preview panel based on current form values.
+         */
+        function updatePreview() {
+            const title = titleInput.value || 'No Title';
+            const date = dateInput.value;
+            const priority = prioritySelect.value;
+            const completed = completedCheckbox.checked;
+            const description = descInput.value || 'No description provided.';
+
+            previewTitle.textContent = title;
+            previewDate.textContent = formatDateDisplay(date);
+            previewDescription.textContent = description;
+
+            // Priority Badge
+            previewPriorityBadge.textContent = priority;
+            previewPriorityBadge.className = `badge badge-${priority}`;
+
+            // Completed Badge
+            previewCompletedBadge.textContent = completed ? 'Completed' : 'Pending';
+            previewCompletedBadge.className = `badge badge-${completed ? 'Completed' : 'Pending'}`;
+            
+            validateForm();
+        }
+
+        /**
+         * Validates required fields and updates the Save button state.
+         */
+        function validateForm() {
+            let isValid = true;
+            const today = getToday();
+            
+            // 1. Task Title Validation
+            if (!titleInput.value.trim()) {
+                document.getElementById('error-title').style.display = 'block';
+                titleInput.setAttribute('aria-invalid', 'true');
+                isValid = false;
+            } else {
+                document.getElementById('error-title').style.display = 'none';
+                titleInput.setAttribute('aria-invalid', 'false');
+            }
+
+            // 2. Due Date Validation
+            if (!dateInput.value) {
+                document.getElementById('error-due-date').style.display = 'block';
+                dateInput.setAttribute('aria-invalid', 'true');
+                isValid = false;
+            } else if (dateInput.value < today) {
+                document.getElementById('error-due-date').textContent = 'Due date cannot be in the past.';
+                document.getElementById('error-due-date').style.display = 'block';
+                dateInput.setAttribute('aria-invalid', 'true');
+                isValid = false;
+            } else {
+                document.getElementById('error-due-date').style.display = 'none';
+                dateInput.setAttribute('aria-invalid', 'false');
+            }
+
+            // Update button
+            saveBtn.disabled = !isValid;
+            return isValid;
+        }
+
+        /**
+         * Prefills the form inputs with data from the TASK configuration object.
+         */
+        function prefillForm() {
+            // Set min date to prevent past selection
+            dateInput.setAttribute('min', getToday());
+            
+            titleInput.value = TASK.task;
+            descInput.value = TASK.description;
+            dateInput.value = TASK.due_date;
+            prioritySelect.value = TASK.priority;
+            completedCheckbox.checked = TASK.completed;
+            
+            updatePreview(); // Initial preview rendering
+            titleInput.focus(); // Auto-focus first input
+        }
+
+        // ----------------------------------------------------
+        // Event Handlers
+        // ----------------------------------------------------
+
+        /** Handles form submission (Save button click). */
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            if (!validateForm()) {
+                showToast('Please fix the required fields.', 'error');
+                return;
+            }
+
+            // Collect data for simulation
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            data.id = TASK.id; // Add ID
+            data.completed = completedCheckbox.checked; // FormData sometimes misrepresents unchecked box
+
+            // --- DEV NOTE: REPLACE THIS SIMULATION WITH REAL AJAX CALL ---
+            console.log(`[BACKEND CALL] Simulating POST update for Task ID ${TASK.id}. Data:`, data);
+            // Example real call: 
+            // fetch(`/tasks/edit/${TASK.id}`, { method: 'POST', body: JSON.stringify(data), headers: {'Content-Type': 'application/json'} })
+            // -------------------------------------------------------------
+
+            showToast('Task saved successfully!');
+            // After successful save, you might redirect or update the dashboard state
+        });
+        
+        /** Handles Cancel button click. */
+        function handleCancel() {
+            console.log(`[NAVIGATION] Navigating to dashboard URL: ${DASHBOARD_URL}`);
+            // window.location.href = DASHBOARD_URL; // Uncomment for live navigation
+        }
+        
+        /** Handles Delete button click. */
+        function handleDelete() {
+            const taskTitle = titleInput.value;
+            // Use a custom confirmation logic instead of native prompt/alert
+            const confirmed = window.confirm(`Are you sure you want to delete the task: "${taskTitle}"? This cannot be undone.`);
+
+            if (confirmed) {
+                // --- DEV NOTE: REPLACE THIS SIMULATION WITH REAL AJAX CALL ---
+                console.log(`[BACKEND CALL] Simulating DELETE for Task ID ${TASK.id}. Redirect to ${DELETE_URL}`);
+                // Example real call: 
+                // fetch(DELETE_URL, { method: 'POST' })
+                // -------------------------------------------------------------
+
+                showToast(`Task "${taskTitle}" deleted!`, 'delete');
+                // Simulate redirect after deletion confirmation
+                setTimeout(() => handleCancel(), 1500); 
+            }
+        }
+        
+        // Global Listeners for UX/Accessibility
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                handleCancel();
+            }
+        });
+
+        // Event listener for form changes to update preview and validation status
+        form.addEventListener('input', updatePreview);
+
+        // Initialize the UI on page load
+        window.onload = prefillForm;
+
+    </script>
+</body>
+</html>

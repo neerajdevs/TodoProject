@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Dashboard</title>
+    <style>
+        /*
+        पिछले चरण से मिला पूरा CSS कोड यहां पेस्ट करें, या
+        इस फाइल को 'style.css' से लिंक करें।
+        */
+        :root {
+            --primary-color: #007bff;
+            --primary-light: #e6f2ff;
+            --text-color-dark: #2c3e50;
+            --text-color-light: #7f8c8d;
+            --background-color: #f8f9fa;
+            --card-background: #ffffff;
+            --border-color: #e0e6ed;
+            --priority-high-color: #e74c3c;
+            --priority-medium-color: #f39c12;
+            --priority-low-color: #2ecc71;
+            --radius-default: 8px;
+            --shadow-subtle: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--background-color); color: var(--text-color-dark); padding: 20px; line-height: 1.6; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; position: relative; }
+
+        header { margin-bottom: 35px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+        .header-text { margin-bottom: 10px; }
+        header h1 { color: var(--text-color-dark); font-size: 2.5em; font-weight: 700; }
+        header p { color: var(--text-color-light); font-size: 1.1em; }
+
+        .add-task-btn { background-color: var(--primary-color); color: white; padding: 10px 20px; border-radius: var(--radius-default); font-weight: 600; text-decoration: none; box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4); transition: all 0.3s; white-space: nowrap; }
+        .add-task-btn:hover { background-color: #0056b3; transform: translateY(-1px); }
+
+        .summary-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; margin-bottom: 30px; }
+        .summary-card { background-color: var(--card-background); padding: 25px; border-radius: var(--radius-default); box-shadow: var(--shadow-subtle); border: 1px solid var(--border-color); transition: all 0.3s ease; text-align: left; }
+        .summary-card:hover { box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); transform: translateY(-3px); }
+        .summary-card h3 { font-size: 0.9em; color: var(--text-color-light); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .summary-card .count { font-size: 3em; font-weight: 800; color: var(--primary-color); }
+
+        #tasksContainer { display: flex; flex-direction: column; gap: 15px; }
+        .task-card { background-color: var(--card-background); padding: 18px; border-radius: var(--radius-default); box-shadow: var(--shadow-subtle); border-left: 5px solid transparent; display: flex; flex-direction: column; justify-content: space-between; transition: box-shadow 0.2s; }
+        .task-card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+
+        .priority-high { border-left-color: var(--priority-high-color); }
+        .priority-medium { border-left-color: var(--priority-medium-color); }
+        .priority-low { border-left-color: var(--priority-low-color); }
+
+        .task-details { flex-grow: 1; margin-bottom: 10px; }
+        .task-details h3 { font-size: 1.2em; font-weight: 600; margin-bottom: 4px; color: var(--text-color-dark); }
+        .task-details .description { font-size: 0.9em; color: var(--text-color-light); margin-bottom: 8px; }
+        .task-meta { display: flex; flex-wrap: wrap; gap: 20px; font-size: 0.8em; color: var(--text-color-light); }
+        
+        .completed { background-color: var(--primary-light); opacity: 0.9; }
+        .completed .task-details h3 { text-decoration: line-through; color: var(--text-color-light); }
+
+        .task-actions { display: flex; gap: 10px; justify-content: flex-start; flex-wrap: wrap; }
+        .btn { padding: 8px 15px; text-decoration: none; color: white; border-radius: 4px; font-size: 0.8em; font-weight: 600; transition: opacity 0.2s, transform 0.2s; line-height: 1; border: none; cursor: pointer; }
+        .btn:hover { opacity: 0.85; transform: translateY(-1px); }
+        .btn-toggle { background-color: var(--priority-low-color); }
+        .btn-toggle.undo { background-color: var(--priority-medium-color); }
+        .btn-edit { background-color: var(--primary-color); }
+        .btn-delete { background-color: var(--priority-high-color); }
+
+        .no-tasks-message { text-align: center; padding: 60px; border: 2px dashed var(--border-color); border-radius: var(--radius-default); background-color: var(--card-background); color: var(--text-color-light); font-size: 1.1em; }
+        .no-tasks-message a { color: var(--primary-color); font-weight: 600; text-decoration: none; margin-top: 10px; display: inline-block; }
+
+        @media (min-width: 768px) {
+            header { align-items: flex-end; }
+            .header-text { margin-bottom: 0; }
+            .task-card { flex-direction: row; align-items: center; padding: 18px 25px; }
+            .task-details { margin-bottom: 0; padding-right: 25px; }
+            .task-actions { justify-content: flex-end; flex-shrink: 0; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <div class="header-text">
+            <h1>Todo Dashboard</h1>
+            <p>
+                {# Django Template Logic #}
+                {% if request.user.is_authenticated %}
+                    Welcome, {{ request.user.username }}!!!
+                {% else %}
+                    Welcome, Guest!
+                {% endif %}
+            </p>
+        </div>
+        
+        <a href="{% url 'addTask' %}" class="btn add-task-btn">
+            + Add New Task
+        </a>
+    </header>
+
+    {# --- Summary Cards Area --- #}
+<!-- Summary Cards -->
+<div class="summary-cards">
+    <div class="summary-card">
+        <h3>Total Tasks</h3>
+        <div class="count">{{ tasks.count }}</div>
+    </div>
+
+    <div class="summary-card">
+        <h3>Completed</h3>
+        <div class="count">
+            {{completed_count}}
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <h3>Pending</h3>
+        <div class="count">
+            {{pending_count}}
+        </div>
+    </div>
+</div>
+
+
+    {# --- Task List Area --- #}
+    <div id="tasksContainer">
+        {% if tasks %}
+            {% for task in tasks %}
+                {% with priority_lower=task.priority|lower %}
+                <div class="task-card {% if task.completed %}completed{% endif %} priority-{{ priority_lower }}">
+                    <div class="task-details">
+                        <h3>{{ task.task }}</h3>
+                        <p class="description">{{ task.description }}</p>
+                        <div class="task-meta">
+                            <span>📅 Due: **{{ task.due_date|date:"M d, Y" }}**</span>
+                            <span>⚡ Priority: **{{ task.priority }}**</span>
+                        </div>
+                    </div>
+                    
+                    {# Task Actions #}
+                    <div class="task-actions">
+                        <a href="{% url 'toggle' task.id %}" 
+                           class="btn btn-toggle {% if task.completed %}undo{% endif %}"
+                           aria-label="Toggle completed status">
+                            {% if task.completed %}Undo ↩️{% else %}Complete ✅{% endif %}
+                        </a>
+                        <a href="{% url 'edit' task.id %}" 
+                           class="btn btn-edit" 
+                           aria-label="Edit task">
+                            Edit ✏️
+                        </a>
+                        <a href="{% url 'delete' task.id %}" 
+                           class="btn btn-delete" 
+                           aria-label="Delete task">
+                            Delete 🗑️
+                        </a>
+                    </div>
+                </div>
+                {% endwith %}
+            {% endfor %}
+        {% else %}
+            <div class="no-tasks-message">
+                 <p>No tasks yet. Start by adding one! 🚀</p>
+                 <p><a href="{% url 'addTask' %}">Add New Task</a></p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

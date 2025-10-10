@@ -1,0 +1,356 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+</head>
+<body>
+    <h1>Home Page</h1>
+    <button  ><a href="{% url 'log_out' %}">Logout</a></button>
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App - Welcome</title>
+    <style>
+        /*
+        ==================================================
+        1. CSS Variables and Global Styles
+        ==================================================
+        */
+        :root {
+            --color-primary: #4A90E2;    /* Blue - Primary button/accent */
+            --color-accent: #50C878;     /* Emerald Green - Secondary action/success */
+            --color-neutral: #F7F7F7;    /* Light Gray - Background */
+            --color-text-dark: #333333;
+            --color-text-light: #ffffff;
+            --font-family-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --max-content-width: 1200px;
+            --header-height: 60px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--color-neutral);
+            color: var(--color-text-dark);
+            line-height: 1.6;
+        }
+
+        /*
+        ==================================================
+        2. Navigation Bar (Header)
+        ==================================================
+        */
+        .header {
+            background-color: var(--color-text-light);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: var(--header-height);
+            padding: 0 16px;
+            max-width: var(--max-content-width);
+            margin: 0 auto;
+        }
+
+        .brand-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            cursor: default; /* Not a link, so visually disable pointer */
+        }
+
+        /* Hamburger Menu Icon (Visible on narrow screens) */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--color-text-dark);
+        }
+
+        /* Navigation Links Container */
+        .nav-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Shared button styling */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            text-decoration: none; /* For links styled as buttons */
+            text-align: center;
+        }
+
+        /* Primary style for nav buttons */
+        .btn-nav-primary {
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
+        }
+
+        .btn-nav-primary:hover, .btn-nav-primary:focus {
+            background-color: #3b74b6; /* Darken primary */
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.4);
+            outline: none; /* Remove default focus outline */
+        }
+
+        /* Secondary style for nav buttons (Login) */
+        .btn-nav-secondary {
+            background-color: transparent;
+            color: var(--color-primary);
+            border: 2px solid var(--color-primary);
+        }
+
+        .btn-nav-secondary:hover, .btn-nav-secondary:focus {
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            outline: none;
+        }
+
+        /*
+        ==================================================
+        3. Main Content Area
+        ==================================================
+        */
+        .main-content {
+            padding: 40px 16px;
+            max-width: var(--max-content-width);
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - var(--header-height) - 50px); /* Fill remaining viewport height */
+        }
+
+        .hero-card {
+            background-color: var(--color-text-light);
+            padding: 40px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .hero-card h1 {
+            font-size: 3rem;
+            color: var(--color-primary);
+            margin-bottom: 16px;
+            font-weight: 800;
+        }
+
+        .hero-card p {
+            font-size: 1.1rem;
+            color: #555555;
+            margin-bottom: 30px;
+        }
+
+        .cta-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .btn-cta-primary {
+            background-color: var(--color-accent);
+            color: var(--color-text-light);
+            font-size: 1.2rem;
+            padding: 12px 28px;
+            width: 100%;
+            max-width: 250px;
+            box-shadow: 0 4px 8px rgba(80, 200, 120, 0.4);
+        }
+
+        .btn-cta-primary:hover, .btn-cta-primary:focus {
+            background-color: #43a165; /* Darken accent */
+            box-shadow: 0 6px 12px rgba(80, 200, 120, 0.5);
+            outline: none;
+        }
+
+        .link-secondary {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .link-secondary:hover, .link-secondary:focus {
+            color: #3b74b6; /* Darker blue */
+            text-decoration: underline;
+            outline: none;
+        }
+
+        /*
+        ==================================================
+        4. Footer
+        ==================================================
+        */
+        .footer {
+            padding: 15px 16px;
+            background-color: var(--color-text-light);
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            border-top: 1px solid #eee;
+        }
+
+        /*
+        ==================================================
+        5. Mobile Responsiveness (Max width 768px - Tablet/Mobile)
+        ==================================================
+        */
+        @media (max-width: 768px) {
+            .menu-toggle {
+                display: block; /* Show hamburger icon */
+            }
+
+            .nav-actions {
+                /* Initially hide the navigation links on mobile */
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: var(--header-height);
+                right: 0;
+                width: 100%;
+                background-color: var(--color-text-light);
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+                padding: 10px 0;
+                /* Optional: Add transition for smoother opening */
+                transition: transform 0.3s ease-out;
+                transform: translateY(-100%);
+            }
+
+            /* Class added by JS to show the menu */
+            .nav-actions.is-open {
+                display: flex;
+                transform: translateY(0);
+            }
+
+            .nav-actions .btn {
+                width: calc(100% - 32px); /* Full width minus padding */
+                margin: 5px 16px;
+                padding: 12px 0;
+            }
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .hero-card h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar" aria-label="Main Navigation">
+            <span class="brand-logo" role="banner">Todo app.</span>
+
+            <button class="menu-toggle" aria-controls="navActions" aria-expanded="false" id="menuToggle">
+                &#9776; </button>
+
+            <div class="nav-actions" id="navActions" data-visible="false">
+                <a href="{% url 'login' %}" class="btn btn-nav-secondary">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-nav-primary">Register</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <div class="hero-card">
+            <h1>Welcome</h1>
+            <p>
+                Ready to add tasks today and track your habits? Please use this site.
+                <br>
+                **It’s time to take control of your day!**
+            </p>
+
+            <div class="cta-group">
+                <button class="btn btn-cta-primary" id="getStartedBtn">Get Started</button>
+                <a href="{% url 'register' %}" class="link-secondary">Learn more about our features</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2025 Todo App. All rights reserved. Built with simplicity in mind.</p>
+    </footer>
+
+    <script>
+        // Get references to the button and the navigation menu
+        const menuToggle = document.getElementById('menuToggle');
+        const navActions = document.getElementById('navActions');
+        const getStartedBtn = document.getElementById('getStartedBtn');
+
+        // Function to toggle the mobile menu visibility and ARIA attributes
+        function toggleMenu() {
+            // Check current state of the menu
+            const isVisible = navActions.classList.contains('is-open');
+
+            // Toggle the 'is-open' class (CSS handles the display/hide logic)
+            navActions.classList.toggle('is-open');
+
+            // Update ARIA attributes for accessibility
+            menuToggle.setAttribute('aria-expanded', !isVisible);
+            navActions.setAttribute('data-visible', !isVisible);
+        }
+
+        // Event listener for the hamburger menu button click
+        menuToggle.addEventListener('click', toggleMenu);
+
+        // Event listener for the Enter/Space key presses on the toggle button
+        menuToggle.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault(); // Prevent default action (like scrolling if focus is elsewhere)
+                toggleMenu();
+            }
+        });
+
+        // Event listener for the CTA button click (simulating an action)
+        getStartedBtn.addEventListener('click', () => {
+            alert('Great choice! This would normally take you to the Sign Up page or the Dashboard.');
+        });
+
+        // Optional: Close the menu if a navigation item is clicked (in a real app, this would be a page load)
+        navActions.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                // Only close the menu if it's currently open (on mobile)
+                if (navActions.classList.contains('is-open')) {
+                    toggleMenu();
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
